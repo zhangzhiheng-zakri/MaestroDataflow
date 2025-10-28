@@ -1,0 +1,56 @@
+{
+    "folders": [
+        {
+            "name": "MaestroDataflow",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "./venv/Scripts/python.exe",
+        "python.terminal.activateEnvironment": true,
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "files.exclude": {
+            "**/__pycache__": true,
+            "**/*.pyc": true,
+            "**/.pytest_cache": true,
+            "**/test_cache": true
+        },
+        "python.analysis.extraPaths": [
+            "."
+        ],
+        "cursorpyright.analysis.extraPaths": [
+            "."
+        ]
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.pylint",
+            "ms-python.black-formatter",
+            "ms-toolsai.jupyter"
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Python: Current File",
+                "type": "python",
+                "request": "launch",
+                "program": "",
+                "console": "integratedTerminal",
+                "cwd": ""
+            },
+            {
+                "name": "Run Example",
+                "type": "python",
+                "request": "launch",
+                "program": "/examples/advanced_pipeline_example.py",
+                "console": "integratedTerminal",
+                "cwd": ""
+            }
+        ]
+    }
+}
