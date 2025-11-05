@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 r"""
 中国数字经济发展数据列名处理工作流
-处理 D:\MaestroDataflow\test\db\中国数字经济发展数据（2005-2023年）.xlsx 文件的列名
+处理 D:\MaestroDataflow\sample_data\中国数字经济发展数据（2005-2023年）.xlsx 文件的列名
 """
 
 import os
@@ -382,7 +382,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # 数据文件路径
-    data_file = project_root / "test" / "db" / "中国数字经济发展数据（2005-2023年）.xlsx"
+    data_file = project_root / "sample_data" / "中国数字经济发展数据（2005-2023年）.xlsx"
     
     print(f"开始处理中国数字经济发展数据列名...")
     print(f"数据文件: {data_file}")

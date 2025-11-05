@@ -15,7 +15,8 @@ from maestro.utils.storage import MaestroStorage
 try:
     import weasyprint
     WEASYPRINT_AVAILABLE = True
-except ImportError:
+except Exception:
+    # 在Windows等环境中，weasyprint可能因缺少系统DLL（如libgobject）在导入阶段抛出非ImportError异常
     WEASYPRINT_AVAILABLE = False
 
 try:

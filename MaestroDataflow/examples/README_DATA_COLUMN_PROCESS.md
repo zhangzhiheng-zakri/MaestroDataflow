@@ -53,6 +53,11 @@ op = ColumnMeaningGeneratorOperator(
 - AI生成列名意义
 - 输出完整的JSON报告
 
+**命名与表名约定：**
+- 推荐将数据库表名与数据集类名统一为英文简称形式 `Dataset<ShortSlug>`，与打包算子保持一致，便于统一引用。
+- 在中文源名称场景下，生成简称的规则为：先对源文件名做 ASCII 过滤（移除非字母数字字符）；若存在 PascalCase 大写分词，取所有大写字母作为缩写（长度≥3优先）；否则截取前 10 个字母并首字母大写；无字母则回退为 `Dataset`。
+- 可通过 `table_name` 参数传入该类名形式以覆盖默认表名（默认表名为 `maestro_<dataset_name>` 的中文拼接）。
+
 **使用示例：**
 ```python
 from maestro.operators.data_column_process_ops import DataColumnProcessOperator
@@ -61,6 +66,7 @@ column_processor = DataColumnProcessOperator(
     dataset_name="用户行为数据",
     dataset_description="包含用户基本信息和行为数据的调研数据集",
     db_connection_string="sqlite:///data.db",
+    table_name="DatasetLCEC",  # 建议与类名一致，用英文简称形式
     service=llm_service
 )
 ```
@@ -68,6 +74,47 @@ column_processor = DataColumnProcessOperator(
 ### 4. QuickDataColumnProcessOperator (快速数据列处理器)
 
 简化版本，主要用于快速生成列名意义单位的JSON。
+
+## 高级缺失值处理
+
+支持更完善的缺失值填充策略：
+- 全局方法：`median`、`mean`、`mode`、`forward`、`backward`、`interpolate`、`knn`、`auto`
+- 按列配置：`dict` 形式，如 `{"colA": "mean", "colB": ("constant", 0), "colC": {"method": "interpolate", "params": {"method": "linear"}}}`
+- 组内填充：`group_keys=[...]` 在分组内计算统计量进行填充（如组内中位数/众数）
+- 缺失指示列：`create_missing_indicators=True` 为每列添加 `<col>__is_missing` 指示列
+- 时间序列插值：指定 `time_column`，并可设置 `interpolate_method="time"/"linear"`
+- KNN数值填充：`knn_numeric=True` 或 `fill_method="knn"` 时对数值列尝试 `KNNImputer`（若不可用则跳过）
+
+示例：
+```python
+column_processor = DataColumnProcessOperator(
+    dataset_name="用户行为数据",
+    dataset_description="包含用户基本信息和行为数据的调研数据集",
+    db_connection_string="sqlite:///data.db",
+    table_name="DatasetLCEC",
+    service=llm_service
+)
+
+result = pipeline.run(
+    na_threshold=0.4,
+    fill_method={
+        "年龄": "median",
+        "性别": "mode",
+        "评分": {"method": "interpolate", "params": {"method": "linear"}},
+        "城市": ("constant", "未知")
+    },
+    group_keys=["地区"],
+    create_missing_indicators=True,
+    time_column="日期",
+    interpolate_method="time",
+    fill_order=["forward", "backward", "mode"],
+    knn_numeric=True,
+    knn_n_neighbors=5,
+    llm_service=llm_service
+)
+```
+
+处理总结中会包含 `missing_fill_stats`，记录每列填充方式、填充数量与是否使用分组。
 
 ## 主要改进
 
@@ -201,6 +248,18 @@ python integrated_column_processing_workflow.py
 ```
 
 输出文件将保存到 `../output/integrated_column_processing_workflow/` 目录。
+
+### 与标准化打包结合（建议实践）
+- 输入文件请放在 `input/datasets/` 目录，示例脚本会自动查找（优先 `.xlsx`，其次 `.csv`），并忽略临时/隐藏文件（如以 `~$`、`.`、`._` 开头）。
+- 运行 `python -m examples.integrated_packaging_workflow` 执行清洗→入库→打包的整合流程；打包阶段将生成类文件 `Dataset<ShortSlug>.py`，并支持使用 LLM 自动生成 `info` 简介。
+- 打包阶段会生成 `all_column_name.json`（列名意义与单位），类文件的 `columns_path` 指向该文件；整合打包不再生成或依赖 `column_template.json`。
+- 可选环境变量：
+  - `MAESTRO_INPUT_FILE`：指定 `input/datasets/` 内的具体文件，必须位于该目录下。
+  - `DEEPSEEK_API_KEY`：启用 LLM 功能（包括生成列名意义与数据集简介、辅助生成英文简称）。
+
+**增量新增数据集（不重跑已打包）**
+- 新增数据集时，仅需将新文件放入 `input/datasets/` 并运行示例，系统会为该文件生成新的数据集目录与类文件，已打包的数据集不会被重新处理。
+- 若新数据集与已存在的数据集同名，输出目录同名情况下会覆盖同名的 CSV/JSON/类文件。要保留旧版本请更换源文件名或调整输出路径。
 
 ## 注意事项
 

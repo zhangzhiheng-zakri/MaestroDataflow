@@ -18,11 +18,15 @@ class LoadDataOperator(OperatorABC):
 
     def run(self, storage: FileStorage, **kwargs) -> Dict[str, Any]:
         """加载数据文件并写入存储系统"""
+        # 对于FileStorage，需要先调用step()来初始化处理步骤
+        if hasattr(storage, 'operator_step') and storage.operator_step == -1:
+            storage = storage.step()
+            
         # 根据文件扩展名确定读取方法
         if self.file_path.endswith('.csv'):
             df = pd.read_csv(self.file_path)
         elif self.file_path.endswith('.xlsx') or self.file_path.endswith('.xls'):
-            df = pd.read_excel(self.file_path)
+            df = pd.read_excel(self.file_path, engine='openpyxl')
         elif self.file_path.endswith('.json'):
             df = pd.read_json(self.file_path)
         elif self.file_path.endswith('.parquet'):

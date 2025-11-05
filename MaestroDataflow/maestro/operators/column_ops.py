@@ -139,8 +139,15 @@ class ColumnMeaningGeneratorOperator(OperatorABC):
     
     def _run_direct_mode(self, storage: MaestroStorage, **kwargs) -> Dict[str, Any]:
         """直接处理模式：直接分析列名生成意义"""
-        # 读取数据获取列名
-        df = storage.read(output_type="dataframe")
+        # 优先使用传入的DataFrame以绕过缓存读取
+        df_override = kwargs.get("df", None)
+        if df_override is None:
+            df_override = kwargs.get("dataframe", None)
+        if isinstance(df_override, pd.DataFrame):
+            df = df_override
+        else:
+            # 读取数据获取列名（需要已初始化的storage.step）
+            df = storage.read(output_type="dataframe")
         column_names = df.columns.tolist()
         
         # 获取LLM服务
@@ -290,8 +297,15 @@ class ColumnMetadataExtractorOperator(OperatorABC):
         """提取列的元数据信息"""
         if hasattr(storage, 'operator_step') and storage.operator_step == -1:
             storage = storage.step()
-            
-        df = storage.read(output_type="dataframe")
+
+        # 优先使用传入的DataFrame以绕过缓存读取
+        df_override = kwargs.get("df", None)
+        if df_override is None:
+            df_override = kwargs.get("dataframe", None)
+        if isinstance(df_override, pd.DataFrame):
+            df = df_override
+        else:
+            df = storage.read(output_type="dataframe")
         
         metadata = {
             "dataset_info": {

@@ -23,7 +23,9 @@ MaestroDataflow AI操作符生态系统为数据处理工作流提供了强大�
 ```python
 from maestro.utils.storage import FileStorage
 from maestro.serving.enhanced_llm_serving import EnhancedLLMServing
-from maestro.operators.ai_ops import *
+from maestro.operators.ai_ops.text_analysis import TextAnalysisOperator
+from maestro.operators.ai_ops.sentiment_analysis import SentimentAnalysisOperator
+from maestro.operators.ai_ops.intelligent_processing import IntelligentDataProcessor
 
 # 创建存储实例
 storage = FileStorage(
@@ -475,6 +477,18 @@ result = feature_engineer.run(
 - **text**: 文本特征（长度、词数、字符数等）
 - **categorical**: 分类特征（频次编码、标签编码等）
 - **interaction**: 交互特征（乘积、比值等）
+
+## 数据列处理器与缺失值填充（参考）
+
+MaestroDataflow 提供了结构化数据的列级处理器 `DataColumnProcessOperator`，用于统一的数据清洗、数据库入库以及列名意义与单位生成。该处理器支持高级缺失值填充策略，包括：
+- 全局方法：`median`、`mean`、`mode`、`forward`、`backward`、`interpolate`、`knn`、`auto`
+- 按列配置：字典形式为不同列设置不同策略（支持常量、插值等）
+- 组内填充：通过 `group_keys=[...]` 在分组内计算统计量进行填充
+- 缺失指示列：`create_missing_indicators=True` 自动生成 `<col>__is_missing` 指示列
+- 时间序列插值：指定 `time_column` 并设置 `interpolate_method="time"/"linear"`
+- KNN 数值填充：启用 `knn_numeric=True` 或设置 `fill_method="knn"`
+
+更多使用示例与参数说明请参考：`examples/README_DATA_COLUMN_PROCESS.md`。
 
 ## 配置和优化
 

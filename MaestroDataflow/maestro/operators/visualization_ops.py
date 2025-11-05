@@ -320,11 +320,11 @@ class ChartGeneratorOperator(OperatorABC):
             latest_data = df.iloc[-1]
             
             # 创建数字经济结构饼图
-            if all(col in df.columns for col in ['数字经济规模_万亿元', '数字产业化规模_万亿元']):
+            if all(col in df.columns for col in ['数字经济规模(万亿元）', '数字产业化规模(万亿元)']):
                 plt.figure(figsize=(10, 8))
                 
-                digital_economy = latest_data['数字经济规模_万亿元']
-                digital_industry = latest_data['数字产业化规模_万亿元']
+                digital_economy = latest_data['数字经济规模(万亿元）']
+                digital_industry = latest_data['数字产业化规模(万亿元)']
                 industry_digitalization = digital_economy - digital_industry
                 
                 values = [digital_industry, industry_digitalization]
@@ -351,10 +351,10 @@ class ChartGeneratorOperator(OperatorABC):
                 chart_paths.append(chart_path)
             
             # 创建GDP占比饼图
-            if '数字经济占GDP比重_%' in df.columns:
+            if '数字经济规模占GDP比重(%)' in df.columns:
                 plt.figure(figsize=(10, 8))
                 
-                digital_ratio = latest_data['数字经济占GDP比重_%']
+                digital_ratio = latest_data['数字经济规模占GDP比重(%)']
                 traditional_ratio = 100 - digital_ratio
                 
                 values = [digital_ratio, traditional_ratio]

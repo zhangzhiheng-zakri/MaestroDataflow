@@ -1,22 +1,45 @@
-# MaestroDataflow AI操作符生态系统
+# MaestroDataflow AI 操作符生态系统
 
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](docs/)
+MaestroDataflow 提供了一个强大的AI操作符生态系统，专为现代数据科学和机器学习工作流设计。本文档详细介绍了所有可用的AI操作符及其使用方法。
 
-## 🚀 概述
+**支持的Python版本**: 3.8+  
+**框架**: MaestroDataflow  
+**特性**: AI驱动的数据处理
 
-MaestroDataflow AI操作符生态系统是一个强大的、模块化的人工智能数据处理框架，为数据科学家和开发者提供了丰富的AI能力，包括文本生成、嵌入向量、RAG（检索增强生成）、多模态处理和智能数据处理等功能。
+## 🚀 核心特性
 
-### ✨ 核心特性
+### 🤖 丰富的AI操作符
+- **文本分析操作符**: 关键词提取、主题建模、文本摘要
+- **情感分析操作符**: 多语言情感识别、情感强度分析
+- **数据清洗操作符**: 智能数据清洗、异常值检测
+- **智能处理操作符**: 自动化数据处理、模式识别
+- **数据分析操作符**: 统计分析、趋势分析、相关性分析
+- **可视化操作符**: 图表生成、仪表板创建、报告生成
 
-- **🤖 丰富的AI操作符**: 文本生成、分类、摘要、嵌入、RAG、多模态处理等
-- **🔧 模块化设计**: 可组合的操作符，支持复杂工作流构建
-- **💾 智能存储**: 集成向量数据库和模型缓存，提升性能
-- **🌐 多模态支持**: 处理文本、图像、音频、视频等多种数据类型
-- **⚡ 高性能**: 批处理、缓存、异步处理等优化机制
-- **🔌 易于扩展**: 简单的接口设计，支持自定义操作符
-- **📊 智能数据处理**: AI驱动的数据清洗、标注和特征工程
+### 🔧 模块化设计
+- 每个操作符都是独立的模块，可以单独使用或组合使用
+- 支持自定义操作符开发
+- 灵活的参数配置系统
+
+### 💾 智能存储
+- 集成向量数据库支持
+- 模型缓存机制
+- 多格式数据支持 (XLSX, CSV, JSON, JSONL, Parquet)
+
+### 🌐 多模态支持
+- 文本数据处理
+- 数值数据分析
+- 图像数据处理（规划中）
+
+### ⚡ 高性能
+- 批处理优化
+- 并行计算支持
+- 内存高效管理
+
+### 🔌 易于扩展
+- 插件式架构
+- 标准化接口
+- 丰富的API
 
 ## 📦 安装
 
@@ -29,7 +52,7 @@ pip install maestro-dataflow
 ### 完整安装（包含所有AI依赖）
 
 ```bash
-pip install maestro-dataflow[ai]
+pip install maestro-dataflow[full]
 ```
 
 ### 开发安装
@@ -47,7 +70,9 @@ pip install -e .[dev,ai]
 ```python
 from maestro.utils.storage import FileStorage
 from maestro.serving.enhanced_llm_serving import EnhancedLLMServing
-from maestro.operators.ai_ops import *
+from maestro.operators.ai_ops.text_analysis import TextAnalysisOperator
+from maestro.operators.ai_ops.sentiment_analysis import SentimentAnalysisOperator
+from maestro.operators.ai_ops.intelligent_processing import IntelligentDataProcessor
 
 # 创建存储实例
 storage = FileStorage(
@@ -119,6 +144,8 @@ result = annotator.run(storage, input_path="clean_data", output_path="annotated_
 result = storage.read(input_path="annotated_data")
 print(result)
 ```
+
+提示：若需要对结构化数据进行列级处理与高级缺失值填充（按列/按组/时间插值/KNN/缺失指示列等），请参考 `examples/README_DATA_COLUMN_PROCESS.md` 中的 `DataColumnProcessOperator` 用法与完整示例。
 
 ## 🏗️ 架构概览
 

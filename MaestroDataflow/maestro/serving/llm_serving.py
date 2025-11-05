@@ -13,8 +13,8 @@ try:
     import requests
 except ImportError:
     requests = None
-import logging
-logging.getLogger(__name__).warning("requests library not found. API-based LLM serving will not work.")
+    import logging
+    logging.getLogger(__name__).warning("requests library not found. API-based LLM serving will not work.")
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

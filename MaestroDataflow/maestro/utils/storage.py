@@ -327,7 +327,7 @@ class FileStorage(MaestroStorage):
                 except pd.errors.EmptyDataError:
                     return pd.DataFrame()  # 返回空DataFrame
             elif file_type in ["xlsx", "xls"]:
-                return pd.read_excel(file_path)
+                return pd.read_excel(file_path, engine='openpyxl')
             elif file_type == "parquet":
                 return pd.read_parquet(file_path)
             elif file_type == "pickle":

@@ -1,6 +1,41 @@
 # MaestroDataflow 测试套件
 
-本目录包含 MaestroDataflow 项目的所有测试文件，涵盖基础功能、AI操作符、存储系统和集成测试。
+这是 MaestroDataflow 项目的完整测试套件，包含基础测试、集成测试和 AI 功能测试。
+
+**支持的Python版本**: 3.8+  
+**测试框架**: pytest  
+**覆盖率工具**: pytest-cov
+
+## 📋 测试结构
+
+### 🔧 基础测试
+- **test_storage.py** - 存储系统测试
+  - 文件读写功能
+  - 多格式支持 (XLSX, CSV, JSON, JSONL, Parquet)
+  - 缓存机制
+  - 错误处理
+
+### 🔗 集成测试  
+- **test_operators.py** - 操作符测试
+  - 基础操作符功能
+  - 数据转换操作符
+  - 输入输出操作符
+  - 操作符链式调用
+
+### 🤖 AI功能测试
+- **test_ai_features.py** - AI功能测试
+  - 文本分析操作符
+  - 情感分析操作符
+  - 向量存储功能
+  - 模型缓存机制
+  - LLM服务集成
+
+### 🚀 管道测试
+- **test_pipeline.py** - 管道系统测试
+  - 管道构建和执行
+  - 错误处理和恢复
+  - 性能测试
+  - 并发处理
 
 ## 测试文件说明
 
@@ -23,33 +58,100 @@
 - `conftest.py` - pytest 配置文件，提供通用的 fixture 和配置
 - `__init__.py` - 测试模块初始化文件
 
-## 运行测试
+## 🚀 运行测试
 
 ### 运行所有测试
+
 ```bash
-pytest test/
+# 基础运行
+python -m pytest test/
+
+# 详细输出
+python -m pytest test/ -v
+
+# 显示测试进度
+python -m pytest test/ --tb=short
 ```
 
 ### 运行特定测试文件
+
 ```bash
-pytest test/test_basic.py
-pytest test/test_integration.py
-pytest test/test_db_storage.py
+# 运行存储系统测试
+python -m pytest test/test_storage.py
+
+# 运行操作符测试
+python -m pytest test/test_operators.py
+
+# 运行AI功能测试
+python -m pytest test/test_ai_features.py
+
+# 运行管道测试
+python -m pytest test/test_pipeline.py
 ```
 
 ### 运行特定测试类或方法
+
 ```bash
-pytest test/test_integration.py::TestIntegration::test_file_storage_pipeline_integration
+# 运行特定测试类
+python -m pytest test/test_storage.py::TestFileStorage
+
+# 运行特定测试方法
+python -m pytest test/test_storage.py::TestFileStorage::test_read_csv
+
+# 运行匹配模式的测试
+python -m pytest test/ -k "storage"
 ```
 
-### 显示详细输出
+### 显示详细输出和测试覆盖率
+
 ```bash
-pytest test/ -v
+# 显示测试覆盖率
+python -m pytest test/ --cov=maestro
+
+# 生成HTML覆盖率报告
+python -m pytest test/ --cov=maestro --cov-report=html
+
+# 显示缺失的行
+python -m pytest test/ --cov=maestro --cov-report=term-missing
+
+# 设置覆盖率阈值
+python -m pytest test/ --cov=maestro --cov-fail-under=80
 ```
 
-### 显示测试覆盖率
+## 📊 测试配置
+
+### pytest.ini 配置
+
+```ini
+[tool:pytest]
+testpaths = test
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+addopts = 
+    -v
+    --tb=short
+    --strict-markers
+    --disable-warnings
+markers =
+    slow: marks tests as slow
+    integration: marks tests as integration tests
+    ai: marks tests as AI functionality tests
+```
+
+### 环境变量
+
+测试时可能需要设置以下环境变量：
+
 ```bash
-pytest test/ --cov=maestro
+# OpenAI API密钥（用于AI功能测试）
+export OPENAI_API_KEY="your-api-key"
+
+# 测试数据目录
+export TEST_DATA_DIR="test/data"
+
+# 启用详细日志
+export MAESTRO_LOG_LEVEL="DEBUG"
 ```
 
 ### 运行AI功能演示测试
@@ -70,6 +172,8 @@ python digital_economy_analysis.py
 
 # 整合列处理工作流示例（输出到 ../output/integrated_column_processing_workflow/）
 python integrated_column_processing_workflow.py
+
+说明：整合打包流程输出的列名说明文件为 `all_column_name.json`，不再生成或依赖 `column_template.json`。
 ```
 
 ## 测试数据
