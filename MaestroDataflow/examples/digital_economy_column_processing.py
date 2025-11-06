@@ -27,23 +27,27 @@ def create_real_llm_service():
     
     # 首先尝试使用DeepSeek API
     try:
-        print("🚀 使用DeepSeek API服务")
-        api_serving = APILLMServing(
-            api_url="https://api.deepseek.com/v1/chat/completions",
-            api_key="sk-e987d89ccdbe46c6948112314096b038",
-            model_name="deepseek-chat",
-            max_tokens=1000,
-            temperature=0.3,  # 降低温度以获得更稳定的结果
-            api_type="openai"  # DeepSeek兼容OpenAI API格式
-        )
-        
-        # 使用增强服务包装，启用缓存
-        llm_service = EnhancedLLMServing(
-            base_serving=api_serving,
-            enable_cache=True,
-            cache_ttl=3600  # 缓存1小时
-        )
-        return llm_service, "deepseek_api"
+        deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
+        if deepseek_api_key:
+            print("🚀 使用DeepSeek API服务")
+            api_serving = APILLMServing(
+                api_url="https://api.deepseek.com/v1/chat/completions",
+                api_key=deepseek_api_key,
+                model_name="deepseek-chat",
+                max_tokens=1000,
+                temperature=0.3,  # 降低温度以获得更稳定的结果
+                api_type="openai"  # DeepSeek兼容OpenAI API格式
+            )
+            
+            # 使用增强服务包装，启用缓存
+            llm_service = EnhancedLLMServing(
+                base_serving=api_serving,
+                enable_cache=True,
+                cache_ttl=3600  # 缓存1小时
+            )
+            return llm_service, "deepseek_api"
+        else:
+            print("⚠️ 未设置DEEPSEEK_API_KEY环境变量，跳过DeepSeek API")
     except Exception as e:
         print(f"⚠️ DeepSeek API服务初始化失败: {e}")
     

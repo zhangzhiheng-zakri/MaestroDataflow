@@ -279,6 +279,34 @@ pipeline.add_operator(sentiment_op)
 pipeline.run()
 ```
 
+#### API密钥配置与安全
+- 强烈建议通过环境变量注入密钥，避免将真实密钥写入代码或提交到版本库。
+- 支持的环境变量包括：`OPENAI_API_KEY`、`DEEPSEEK_API_KEY`、`AZURE_OPENAI_API_KEY`。
+
+推荐用法示例：
+
+```python
+import os
+from maestro.serving.llm_serving import APILLMServing
+
+# 优先从环境变量读取密钥
+api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise RuntimeError("未设置 API 密钥，请配置 DEEPSEEK_API_KEY 或 OPENAI_API_KEY")
+
+llm_serving = APILLMServing(
+    api_key=api_key,
+    model_name="gpt-3.5-turbo",
+    base_url="https://api.openai.com/v1"
+)
+```
+
+在 Windows 终端设置环境变量：
+- 临时当前会话：`$env:DEEPSEEK_API_KEY="你的密钥"`
+- 永久（重启终端后生效）：`setx DEEPSEEK_API_KEY "你的密钥"`
+
+如曾误提交真实密钥，请在对应平台及时“旋转/重置密钥”。
+
 ### 直接使用存储系统
 
 ```python
